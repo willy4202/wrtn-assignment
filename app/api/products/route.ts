@@ -1,57 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { products, Product } from "./data";
+import { products } from "./data";
 
 // Zod 스키마 정의
 const ProductSchema = z.object({
-  id: z.string().min(1, "ID는 필수입니다"),
-  name: z.string().min(1, "상품명은 필수입니다"),
-  price: z.number().positive("가격은 양수여야 합니다"),
-  image: z.string().regex(/^https?:\/\/.+$/, "올바른 이미지 URL이 필요합니다"),
-  description: z.string().min(1, "설명은 필수입니다"),
+  id: z.string(),
+  name: z.string(),
+  price: z.number(),
+  image: z.string(),
+  description: z.string(),
 });
 
-// GET 메서드 - 모든 상품 조회
 export async function GET() {
-  return NextResponse.json(products);
+  try {
+    const parsed = ProductSchema.parse(products);
+    return NextResponse.json(parsed);
+  } catch {
+    return NextResponse.json(
+      { error: "상품을 가져오는데 실패했습니다." },
+      { status: 500 }
+    );
+  }
 }
 
-// POST 메서드 - 새 상품 추가
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Zod를 사용한 요청 검증
+    // Zod로 데이터 검증
     const validatedData = ProductSchema.parse(body);
 
-    // 중복 ID 체크
-    const exists = products.some((p) => p.id === validatedData.id);
-    if (exists) {
-      return NextResponse.json(
-        { message: "이미 존재하는 ID입니다" },
-        { status: 409 }
-      );
-    }
+    // 실제 환경에서는 데이터베이스에 저장
+    console.log("새 상품 생성:", validatedData);
 
-    // 새 상품 추가
-    const newProduct: Product = validatedData;
-    products.push(newProduct);
-
-    return NextResponse.json(newProduct, { status: 201 });
+    return NextResponse.json(
+      { message: "상품이 성공적으로 생성되었습니다.", product: validatedData },
+      { status: 201 }
+    );
   } catch (error) {
-    // Zod 검증 에러 처리
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        {
-          message: "입력 데이터가 올바르지 않습니다",
-          error,
-        },
+        { error: "잘못된 데이터 형식입니다.", details: error.issues },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { message: "서버 오류가 발생했습니다" },
+      { error: "상품 생성에 실패했습니다." },
       { status: 500 }
     );
   }
