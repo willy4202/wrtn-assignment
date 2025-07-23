@@ -2,20 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { products } from "./data";
 
-// Zod 스키마 정의
+// 단일 상품 스키마 정의
 const ProductSchema = z.object({
   id: z.string(),
   name: z.string(),
   price: z.number(),
   image: z.string(),
   description: z.string(),
+  date: z.date(),
 });
+
+// 상품 배열 스키마 정의
+const ProductsArraySchema = z.array(ProductSchema);
 
 export async function GET() {
   try {
-    const parsed = ProductSchema.parse(products);
-    return NextResponse.json(parsed);
-  } catch {
+    // 배열 스키마로 검증
+    const validatedProducts = ProductsArraySchema.parse(products);
+    return NextResponse.json(validatedProducts);
+  } catch (error) {
+    console.error("상품 데이터 검증 오류:", error);
     return NextResponse.json(
       { error: "상품을 가져오는데 실패했습니다." },
       { status: 500 }
@@ -27,7 +33,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Zod로 데이터 검증
+    // 단일 상품 스키마로 검증
     const validatedData = ProductSchema.parse(body);
 
     // 실제 환경에서는 데이터베이스에 저장

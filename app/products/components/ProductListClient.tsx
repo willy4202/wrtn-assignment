@@ -11,6 +11,16 @@ interface ProductListClientProps {
   initialData: Product[];
 }
 
+const ProductListClient = ({ initialData }: ProductListClientProps) => {
+  return (
+    <ErrorBoundary fallback={<p>Error</p>}>
+      <Suspense fallback={<p>Loading...</p>}>
+        <ProductList initialData={initialData} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+};
+
 const ProductList = ({ initialData }: ProductListClientProps) => {
   const { data: productList } = useSuspenseQuery({
     ...getProductsQuery,
@@ -23,16 +33,6 @@ const ProductList = ({ initialData }: ProductListClientProps) => {
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
-  );
-};
-
-const ProductListClient = ({ initialData }: ProductListClientProps) => {
-  return (
-    <ErrorBoundary fallback={<p>Error</p>}>
-      <Suspense fallback={<p>Loading...</p>}>
-        <ProductList initialData={initialData} />
-      </Suspense>
-    </ErrorBoundary>
   );
 };
 

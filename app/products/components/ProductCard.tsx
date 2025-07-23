@@ -26,7 +26,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </picture>
       </div>
 
-      {/* 상품 정보 */}
       <div className="p-4">
         <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-1">
           {product.name}
@@ -39,10 +38,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <div className="flex items-center justify-between">
           <span className="text-xl font-bold text-blue-600">
             {product.price.toLocaleString("ko-KR")}원
-          </span>
-
-          <span className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
-            상세보기
           </span>
         </div>
       </div>
