@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { products } from "./data";
+import { products } from "@/app/mock/products";
+import { ProductSchema } from "@/app/schema/product";
 
-// 단일 상품 스키마 정의
-const ProductSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  price: z.number(),
-  image: z.string(),
-  description: z.string(),
-  date: z.date(),
-});
-
-// 상품 배열 스키마 정의
 const ProductsArraySchema = z.array(ProductSchema);
 
 export async function GET() {
   try {
     // 배열 스키마로 검증
     const validatedProducts = ProductsArraySchema.parse(products);
+
     return NextResponse.json(validatedProducts);
   } catch (error) {
     console.error("상품 데이터 검증 오류:", error);

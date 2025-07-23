@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Product } from "@/types/product";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -11,19 +12,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link
       href={`/products/${product.id}`}
-      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer overflow-hidden block"
+      className="bg-white rounded-lg border border-gray-200 shadow-md cursor-pointer overflow-hidden block"
     >
       <div className="relative w-full h-48 bg-gray-100">
-        <picture className="w-full h-full">
-          <source srcSet={product.image} type="image/webp" />
-          <source srcSet={product.image} type="image/jpeg" />
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </picture>
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          className="object-cover"
+          priority
+        />
       </div>
 
       <div className="p-4">
